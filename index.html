@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luhu</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0d0d0d; color: #f5f5f5; font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  .nav { display: flex; align-items: center; gap: 2rem; padding: 1.2rem 2.5rem; background: linear-gradient(to bottom, #0d0d0d, transparent); position: sticky; top: 0; z-index: 100; }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; color: #ff6a00; letter-spacing: 2px; }
+  .nav-links { display: flex; gap: 1.5rem; }
+  .nav-links a { color: #ccc; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; cursor: pointer; }
+  .nav-links a:hover { color: #ff6a00; }
+  .nav-right { margin-left: auto; display: flex; align-items: center; gap: 1rem; }
+  .nav-btn { background: #ff6a00; color: white; border: none; padding: 0.5rem 1.2rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+
+  .hero { padding: 3rem 2.5rem 2rem; background: radial-gradient(ellipse at top left, #ff6a0015 0%, transparent 60%); }
+  .hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; color: white; letter-spacing: 1px; }
+  .hero p { color: #999; font-size: 0.95rem; margin-top: 0.3rem; }
+
+  .section { padding: 1.5rem 2.5rem; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 1px; color: #ff6a00; margin-bottom: 1rem; }
+
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+
+  .card { position: relative; border-radius: 10px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; background: #1a1a1a; border: 1px solid #2a2a2a; aspect-ratio: 16/9; }
+  .card:hover { transform: scale(1.03); box-shadow: 0 0 0 2px #ff6a00; }
+  .card-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .card-img-placeholder { width: 100%; height: 100%; background: #1e1e1e; display: flex; align-items: center; justify-content: center; color: #555; font-size: 2rem; }
+  .card-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, transparent 100%); padding: 0.8rem; }
+  .card-title { font-weight: 600; font-size: 0.85rem; color: white; line-height: 1.3; }
+  .card-sub { font-size: 0.72rem; color: #ff6a00; margin-top: 2px; font-weight: 500; }
+  .play-badge { position: absolute; top: 8px; right: 8px; background: #ff6a00; color: white; font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
+
+  .add-btn { display: flex; align-items: center; gap: 0.5rem; background: #ff6a00; color: white; border: none; padding: 0.6rem 1.3rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-bottom: 1.5rem; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
+  .add-btn:hover { background: #e05a00; }
+
+  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 999; align-items: center; justify-content: center; }
+  .modal-bg.open { display: flex; }
+  .modal { background: #1a1a1a; border: 1px solid #333; border-radius: 14px; padding: 2rem; width: 90%; max-width: 420px; }
+  .modal h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: #ff6a00; margin-bottom: 1.2rem; letter-spacing: 1px; }
+  .modal label { display: block; font-size: 0.8rem; color: #999; margin-bottom: 0.3rem; margin-top: 0.8rem; font-weight: 500; }
+  .modal input { width: 100%; background: #111; border: 1px solid #333; color: white; padding: 0.6rem 0.8rem; border-radius: 7px; font-size: 0.9rem; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.2s; }
+  .modal input:focus { border-color: #ff6a00; }
+  .modal-btns { display: flex; gap: 0.8rem; margin-top: 1.4rem; }
+  .modal-save { flex: 1; background: #ff6a00; color: white; border: none; padding: 0.65rem; border-radius: 8px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; }
+  .modal-save:hover { background: #e05a00; }
+  .modal-cancel { flex: 1; background: transparent; color: #999; border: 1px solid #333; padding: 0.65rem; border-radius: 8px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; }
+  .modal-cancel:hover { color: white; border-color: #555; }
+  .img-preview { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 7px; margin-top: 0.5rem; display: none; background: #111; border: 1px solid #2a2a2a; }
+
+  .empty-state { color: #444; font-size: 0.9rem; padding: 2rem 0; text-align: center; grid-column: 1/-1; }
+  .empty-icon { font-size: 2.5rem; margin-bottom: 0.5rem; display: block; }
+
+  .delete-btn { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.7); color: #ff6a00; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 0.75rem; cursor: pointer; display: none; align-items: center; justify-content: center; font-weight: 700; line-height: 1; }
+  .card:hover .delete-btn { display: flex; }
+
+  .footer { text-align: center; padding: 2rem; color: #444; font-size: 0.8rem; margin-top: 2rem; border-top: 1px solid #1e1e1e; }
+  .footer span { color: #ff6a00; font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="logo">LUHU</div>
+  <div class="nav-links">
+    <a onclick="scrollToSection('my-videos')">My Videos</a>
+    <a onclick="scrollToSection('featured')">Featured</a>
+  </div>
+  <div class="nav-right">
+    <button class="nav-btn" onclick="openModal()">+ Add Video</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Your Personal Stream 🎬</h1>
+  <p>All your videos, one place. Click any card to open the link.</p>
+</div>
+
+<div class="section" id="my-videos">
+  <div class="section-title">My Videos</div>
+  <button class="add-btn" onclick="openModal()">
+    <span style="font-size:1.1rem;">+</span> Add New Video
+  </button>
+  <div class="cards-grid" id="user-cards">
+    <div class="empty-state">
+      <span class="empty-icon">🎥</span>
+      No videos yet — hit the button above to add your first one!
+    </div>
+  </div>
+</div>
+
+<div class="section" id="featured">
+  <div class="section-title">Example Cards</div>
+  <div class="cards-grid" id="featured-cards"></div>
+</div>
+
+<div class="footer">
+  Powered by <span>LUHU</span> — your stream, your rules
+</div>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h2>Add a Video</h2>
+    <label>Video Title</label>
+    <input type="text" id="inp-title" placeholder="e.g. Soccer Highlights 2025" />
+    <label>Subtitle / Tag</label>
+    <input type="text" id="inp-sub" placeholder="e.g. Sports · 2025" />
+    <label>Thumbnail Image URL</label>
+    <input type="text" id="inp-img" placeholder="Paste image URL here..." oninput="previewImg(this.value)" />
+    <img id="img-preview" class="img-preview" alt="preview" />
+    <label>Video / Page Link (opens when clicked)</label>
+    <input type="text" id="inp-link" placeholder="https://..." />
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-save" onclick="saveCard()">Add to Luhu</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let editIdx = null;
+let cards = JSON.parse(localStorage.getItem('luhu_cards') || '[]');
+
+const examples = [
+  { title: 'Example: Game Highlights', sub: 'Sports · Demo', img: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=600&q=80', link: '#' },
+  { title: 'Example: Vlog Day 1', sub: 'Travel · Demo', img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80', link: '#' },
+  { title: 'Example: Photography BTS', sub: 'Photography · Demo', img: 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=600&q=80', link: '#' },
+];
+
+function renderFeatured() {
+  const grid = document.getElementById('featured-cards');
+  grid.innerHTML = examples.map(c => `
+    <div class="card" onclick="goLink('${c.link}')">
+      <img class="card-img" src="${c.img}" alt="${c.title}" onerror="this.style.display='none'" />
+      <div class="card-overlay">
+        <div class="card-title">${c.title}</div>
+        <div class="card-sub">${c.sub}</div>
+      </div>
+      <div class="play-badge">DEMO</div>
+    </div>
+  `).join('');
+}
+
+function renderCards() {
+  const grid = document.getElementById('user-cards');
+  if (!cards.length) {
+    grid.innerHTML = '<div class="empty-state"><span class="empty-icon">🎥</span>No videos yet — hit the button above to add your first one!</div>';
+    return;
+  }
+  grid.innerHTML = cards.map((c, i) => `
+    <div class="card" onclick="goLink('${c.link}')">
+      ${c.img
+        ? `<img class="card-img" src="${c.img}" alt="${c.title}" onerror="this.parentElement.querySelector('.card-img-placeholder').style.display='flex';this.style.display='none'" /><div class="card-img-placeholder" style="display:none;">🎬</div>`
+        : `<div class="card-img-placeholder">🎬</div>`
+      }
+      <div class="card-overlay">
+        <div class="card-title">${c.title}</div>
+        ${c.sub ? `<div class="card-sub">${c.sub}</div>` : ''}
+      </div>
+      <button class="delete-btn" onclick="deleteCard(event,${i})" title="Remove">✕</button>
+    </div>
+  `).join('');
+}
+
+function saveCards() { localStorage.setItem('luhu_cards', JSON.stringify(cards)); }
+
+function openModal(idx = null) {
+  editIdx = idx;
+  document.getElementById('inp-title').value = idx !== null ? cards[idx].title : '';
+  document.getElementById('inp-sub').value = idx !== null ? cards[idx].sub : '';
+  document.getElementById('inp-img').value = idx !== null ? cards[idx].img : '';
+  document.getElementById('inp-link').value = idx !== null ? cards[idx].link : '';
+  const prev = document.getElementById('img-preview');
+  if (idx !== null && cards[idx].img) { prev.src = cards[idx].img; prev.style.display = 'block'; }
+  else { prev.style.display = 'none'; prev.src = ''; }
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+function previewImg(url) {
+  const prev = document.getElementById('img-preview');
+  if (url.trim()) { prev.src = url; prev.style.display = 'block'; }
+  else { prev.style.display = 'none'; }
+}
+
+function saveCard() {
+  const title = document.getElementById('inp-title').value.trim();
+  const sub = document.getElementById('inp-sub').value.trim();
+  const img = document.getElementById('inp-img').value.trim();
+  const link = document.getElementById('inp-link').value.trim();
+  if (!title) { document.getElementById('inp-title').focus(); return; }
+  if (!link) { document.getElementById('inp-link').focus(); return; }
+  const card = { title, sub, img, link };
+  if (editIdx !== null) cards[editIdx] = card;
+  else cards.unshift(card);
+  saveCards();
+  renderCards();
+  closeModal();
+}
+
+function deleteCard(e, i) {
+  e.stopPropagation();
+  cards.splice(i, 1);
+  saveCards();
+  renderCards();
+}
+
+function goLink(url) {
+  if (url && url !== '#') window.open(url, '_blank');
+}
+
+function scrollToSection(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+}
+
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+renderFeatured();
+renderCards();
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"8bb9a4ff338042ea94848359dbe1f60d","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
