@@ -9,13 +9,54 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #0d0d0d; color: #f5f5f5; font-family: 'DM Sans', sans-serif; min-height: 100vh; }
 
-  .nav { display: flex; align-items: center; gap: 2rem; padding: 1.2rem 2.5rem; background: linear-gradient(to bottom, #0d0d0d, transparent); position: sticky; top: 0; z-index: 100; }
+  /* SCREENS */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: block; }
+  #profile-select-screen { display: none; align-items: center; justify-content: center; flex-direction: column; min-height: 100vh; background: #0d0d0d; }
+  #profile-select-screen.active { display: flex; }
+  #pin-screen { display: none; align-items: center; justify-content: center; flex-direction: column; min-height: 100vh; background: #0d0d0d; gap: 1.2rem; }
+  #pin-screen.active { display: flex; }
+
+  /* PROFILE SELECT */
+  .ps-logo { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; color: #ff6a00; letter-spacing: 4px; margin-bottom: 0.5rem; }
+  .ps-sub { color: #666; font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 2rem; }
+  .profiles-grid { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; max-width: 600px; }
+  .profile-tile { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; cursor: pointer; }
+  .profile-avatar { width: 90px; height: 90px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; border: 3px solid transparent; transition: border-color 0.2s, transform 0.2s; }
+  .profile-tile:hover .profile-avatar { border-color: #ff6a00; transform: scale(1.06); }
+  .profile-name { color: #ccc; font-size: 0.85rem; font-weight: 500; }
+  .add-profile-tile .profile-avatar { background: #1a1a1a; border: 2px dashed #333; color: #555; font-size: 2rem; }
+  .add-profile-tile:hover .profile-avatar { border-color: #ff6a00; color: #ff6a00; }
+  .manage-btn { margin-top: 2.5rem; background: transparent; border: 1px solid #333; color: #888; padding: 0.5rem 1.5rem; border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+  .manage-btn:hover { border-color: #ff6a00; color: #ff6a00; }
+
+  /* PIN SCREEN */
+  .pin-avatar { width: 70px; height: 70px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; }
+  .pin-name { color: #ccc; font-size: 1rem; font-weight: 500; }
+  .pin-label { color: #666; font-size: 0.8rem; letter-spacing: 1px; }
+  .dots { display: flex; gap: 1rem; margin: 0.3rem 0; }
+  .dot { width: 15px; height: 15px; border-radius: 50%; background: #2a2a2a; border: 2px solid #444; transition: background 0.15s, border-color 0.15s; }
+  .dot.filled { background: #ff6a00; border-color: #ff6a00; }
+  .pin-error { color: #ff4444; font-size: 0.8rem; height: 1rem; opacity: 0; transition: opacity 0.2s; }
+  .pin-error.show { opacity: 1; }
+  .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+  .key { width: 72px; height: 72px; border-radius: 50%; background: #1a1a1a; border: 1px solid #2a2a2a; color: white; font-size: 1.4rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s, transform 0.1s; display: flex; align-items: center; justify-content: center; }
+  .key:hover { background: #2a2a2a; }
+  .key:active { transform: scale(0.93); background: #ff6a0033; }
+  .key.del { font-size: 1rem; color: #999; }
+  .back-link { color: #555; font-size: 0.8rem; cursor: pointer; margin-top: 0.5rem; }
+  .back-link:hover { color: #ff6a00; }
+
+  /* APP */
+  .nav { display: flex; align-items: center; gap: 2rem; padding: 1.2rem 2.5rem; background: #0d0d0d; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #1a1a1a; }
   .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; color: #ff6a00; letter-spacing: 2px; }
   .nav-links { display: flex; gap: 1.5rem; }
   .nav-links a { color: #ccc; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; cursor: pointer; }
   .nav-links a:hover { color: #ff6a00; }
   .nav-right { margin-left: auto; display: flex; align-items: center; gap: 1rem; }
   .nav-btn { background: #ff6a00; color: white; border: none; padding: 0.5rem 1.2rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .nav-profile { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 1rem; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s; }
+  .nav-profile:hover { border-color: #ff6a00; }
 
   .hero { padding: 3rem 2.5rem 2rem; background: radial-gradient(ellipse at top left, #ff6a0015 0%, transparent 60%); }
   .hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; color: white; letter-spacing: 1px; }
@@ -23,9 +64,7 @@
 
   .section { padding: 1.5rem 2.5rem; }
   .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 1px; color: #ff6a00; margin-bottom: 1rem; }
-
   .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
-
   .card { position: relative; border-radius: 10px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; background: #1a1a1a; border: 1px solid #2a2a2a; aspect-ratio: 16/9; }
   .card:hover { transform: scale(1.03); box-shadow: 0 0 0 2px #ff6a00; }
   .card-img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -34,13 +73,16 @@
   .card-title { font-weight: 600; font-size: 0.85rem; color: white; line-height: 1.3; }
   .card-sub { font-size: 0.72rem; color: #ff6a00; margin-top: 2px; font-weight: 500; }
   .play-badge { position: absolute; top: 8px; right: 8px; background: #ff6a00; color: white; font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
-
+  .delete-btn { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.7); color: #ff6a00; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 0.75rem; cursor: pointer; display: none; align-items: center; justify-content: center; font-weight: 700; }
+  .card:hover .delete-btn { display: flex; }
   .add-btn { display: flex; align-items: center; gap: 0.5rem; background: #ff6a00; color: white; border: none; padding: 0.6rem 1.3rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-bottom: 1.5rem; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
   .add-btn:hover { background: #e05a00; }
+  .empty-state { color: #444; font-size: 0.9rem; padding: 2rem 0; text-align: center; grid-column: 1/-1; }
 
+  /* MODALS */
   .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 999; align-items: center; justify-content: center; }
   .modal-bg.open { display: flex; }
-  .modal { background: #1a1a1a; border: 1px solid #333; border-radius: 14px; padding: 2rem; width: 90%; max-width: 420px; }
+  .modal { background: #1a1a1a; border: 1px solid #333; border-radius: 14px; padding: 2rem; width: 90%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
   .modal h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: #ff6a00; margin-bottom: 1.2rem; letter-spacing: 1px; }
   .modal label { display: block; font-size: 0.8rem; color: #999; margin-bottom: 0.3rem; margin-top: 0.8rem; font-weight: 500; }
   .modal input { width: 100%; background: #111; border: 1px solid #333; color: white; padding: 0.6rem 0.8rem; border-radius: 7px; font-size: 0.9rem; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.2s; }
@@ -50,13 +92,25 @@
   .modal-save:hover { background: #e05a00; }
   .modal-cancel { flex: 1; background: transparent; color: #999; border: 1px solid #333; padding: 0.65rem; border-radius: 8px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; }
   .modal-cancel:hover { color: white; border-color: #555; }
-  .img-preview { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 7px; margin-top: 0.5rem; display: none; background: #111; border: 1px solid #2a2a2a; }
+  .img-preview { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 7px; margin-top: 0.5rem; display: none; border: 1px solid #2a2a2a; }
 
-  .empty-state { color: #444; font-size: 0.9rem; padding: 2rem 0; text-align: center; grid-column: 1/-1; }
-  .empty-icon { font-size: 2.5rem; margin-bottom: 0.5rem; display: block; }
+  /* SETTINGS */
+  .settings-section { margin-bottom: 2rem; }
+  .settings-label { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: #ff6a00; letter-spacing: 1px; margin-bottom: 1rem; }
+  .profile-row { display: flex; align-items: center; gap: 1rem; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 0.8rem 1rem; margin-bottom: 0.6rem; }
+  .profile-row-avatar { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; flex-shrink: 0; }
+  .profile-row-info { flex: 1; }
+  .profile-row-name { font-weight: 600; font-size: 0.9rem; }
+  .profile-row-pin { font-size: 0.75rem; color: #666; }
+  .profile-row-btns { display: flex; gap: 0.5rem; }
+  .row-btn { background: #111; border: 1px solid #2a2a2a; color: #999; padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+  .row-btn:hover { border-color: #ff6a00; color: #ff6a00; }
+  .row-btn.danger:hover { border-color: #ff4444; color: #ff4444; }
 
-  .delete-btn { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.7); color: #ff6a00; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 0.75rem; cursor: pointer; display: none; align-items: center; justify-content: center; font-weight: 700; line-height: 1; }
-  .card:hover .delete-btn { display: flex; }
+  /* COLOR SWATCHES */
+  .color-swatches { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
+  .swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: border-color 0.2s, transform 0.15s; }
+  .swatch:hover, .swatch.selected { border-color: white; transform: scale(1.15); }
 
   .footer { text-align: center; padding: 2rem; color: #444; font-size: 0.8rem; margin-top: 2rem; border-top: 1px solid #1e1e1e; }
   .footer span { color: #ff6a00; font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 1px; }
@@ -64,47 +118,97 @@
 </head>
 <body>
 
-<nav class="nav">
-  <div class="logo">LUHU</div>
-  <div class="nav-links">
-    <a onclick="scrollToSection('my-videos')">My Videos</a>
-    <a onclick="scrollToSection('featured')">Featured</a>
-  </div>
-  <div class="nav-right">
-    <button class="nav-btn" onclick="openModal()">+ Add Video</button>
-  </div>
-</nav>
-
-<div class="hero">
-  <h1>Your Personal Stream 🎬</h1>
-  <p>All your videos, one place. Click any card to open the link.</p>
+<!-- PROFILE SELECT SCREEN -->
+<div id="profile-select-screen">
+  <div class="ps-logo">LUHU</div>
+  <div class="ps-sub">WHO'S WATCHING?</div>
+  <div class="profiles-grid" id="profiles-grid"></div>
+  <button class="manage-btn" onclick="showScreen('settings-screen')">Manage Profiles</button>
 </div>
 
-<div class="section" id="my-videos">
-  <div class="section-title">My Videos</div>
-  <button class="add-btn" onclick="openModal()">
-    <span style="font-size:1.1rem;">+</span> Add New Video
-  </button>
-  <div class="cards-grid" id="user-cards">
-    <div class="empty-state">
-      <span class="empty-icon">🎥</span>
-      No videos yet — hit the button above to add your first one!
+<!-- PIN SCREEN -->
+<div id="pin-screen">
+  <div class="pin-avatar" id="pin-avatar"></div>
+  <div class="pin-name" id="pin-name"></div>
+  <div class="pin-label">ENTER YOUR PIN</div>
+  <div class="dots">
+    <div class="dot" id="pd0"></div>
+    <div class="div class=dot" id="pd1"></div>
+    <div class="dot" id="pd2"></div>
+    <div class="dot" id="pd3"></div>
+  </div>
+  <div class="pin-error" id="pin-error">Wrong PIN. Try again.</div>
+  <div class="keypad">
+    <button class="key" onclick="pinKey('1')">1</button>
+    <button class="key" onclick="pinKey('2')">2</button>
+    <button class="key" onclick="pinKey('3')">3</button>
+    <button class="key" onclick="pinKey('4')">4</button>
+    <button class="key" onclick="pinKey('5')">5</button>
+    <button class="key" onclick="pinKey('6')">6</button>
+    <button class="key" onclick="pinKey('7')">7</button>
+    <button class="key" onclick="pinKey('8')">8</button>
+    <button class="key" onclick="pinKey('9')">9</button>
+    <button class="key" onclick="pinKey('')"></button>
+    <button class="key" onclick="pinKey('0')">0</button>
+    <button class="key del" onclick="pinDel()">⌫</button>
+  </div>
+  <div class="back-link" onclick="showProfileSelect()">← Switch Profile</div>
+</div>
+
+<!-- MAIN APP SCREEN -->
+<div id="app-screen" class="screen">
+  <nav class="nav">
+    <div class="logo">LUHU</div>
+    <div class="nav-links">
+      <a onclick="scrollToSection('my-videos')">My Videos</a>
+      <a onclick="scrollToSection('featured')">Featured</a>
+    </div>
+    <div class="nav-right">
+      <button class="nav-btn" onclick="openVideoModal()">+ Add Video</button>
+      <div class="nav-profile" id="nav-profile-badge" onclick="showScreen('settings-screen')"></div>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <h1 id="hero-title">Your Personal Stream 🎬</h1>
+    <p id="hero-sub">All your videos, one place. Click any card to open the link.</p>
+  </div>
+
+  <div class="section" id="my-videos">
+    <div class="section-title">My Videos</div>
+    <button class="add-btn" onclick="openVideoModal()"><span style="font-size:1.1rem;">+</span> Add New Video</button>
+    <div class="cards-grid" id="user-cards"></div>
+  </div>
+
+  <div class="section" id="featured">
+    <div class="section-title">Example Cards</div>
+    <div class="cards-grid" id="featured-cards"></div>
+  </div>
+
+  <div class="footer">Powered by <span>LUHU</span> — your stream, your rules</div>
+</div>
+
+<!-- SETTINGS SCREEN -->
+<div id="settings-screen" class="screen">
+  <nav class="nav">
+    <div class="logo">LUHU</div>
+    <div class="nav-right">
+      <button class="nav-btn" onclick="goBackToApp()">← Back</button>
+    </div>
+  </nav>
+  <div class="section">
+    <div class="settings-section">
+      <div class="settings-label">Profiles</div>
+      <div id="settings-profiles-list"></div>
+      <button class="add-btn" style="margin-top:0.5rem;" onclick="openAddProfileModal()"><span>+</span> Add Profile</button>
     </div>
   </div>
 </div>
 
-<div class="section" id="featured">
-  <div class="section-title">Example Cards</div>
-  <div class="cards-grid" id="featured-cards"></div>
-</div>
-
-<div class="footer">
-  Powered by <span>LUHU</span> — your stream, your rules
-</div>
-
-<div class="modal-bg" id="modal">
+<!-- VIDEO MODAL -->
+<div class="modal-bg" id="video-modal">
   <div class="modal">
-    <h2>Add a Video</h2>
+    <h2 id="video-modal-title">Add a Video</h2>
     <label>Video Title</label>
     <input type="text" id="inp-title" placeholder="e.g. Soccer Highlights 2025" />
     <label>Subtitle / Tag</label>
@@ -112,18 +216,167 @@
     <label>Thumbnail Image URL</label>
     <input type="text" id="inp-img" placeholder="Paste image URL here..." oninput="previewImg(this.value)" />
     <img id="img-preview" class="img-preview" alt="preview" />
-    <label>Video / Page Link (opens when clicked)</label>
+    <label>Video / Page Link</label>
     <input type="text" id="inp-link" placeholder="https://..." />
     <div class="modal-btns">
-      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
-      <button class="modal-save" onclick="saveCard()">Add to Luhu</button>
+      <button class="modal-cancel" onclick="closeVideoModal()">Cancel</button>
+      <button class="modal-save" onclick="saveVideo()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT PROFILE MODAL -->
+<div class="modal-bg" id="profile-modal">
+  <div class="modal">
+    <h2 id="profile-modal-title">Add Profile</h2>
+    <label>Profile Name</label>
+    <input type="text" id="inp-pname" placeholder="e.g. Broskie" maxlength="20" />
+    <label>4-Digit PIN</label>
+    <input type="text" id="inp-ppin" placeholder="e.g. 3145" maxlength="4" inputmode="numeric" />
+    <label>Avatar Color</label>
+    <div class="color-swatches" id="color-swatches"></div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeProfileModal()">Cancel</button>
+      <button class="modal-save" onclick="saveProfile()">Save</button>
     </div>
   </div>
 </div>
 
 <script>
-let editIdx = null;
-let cards = JSON.parse(localStorage.getItem('luhu_cards') || '[]');
+const COLORS = ['#ff6a00','#e63946','#2196f3','#9c27b0','#4caf50','#ff9800','#00bcd4','#f06292','#795548'];
+const EMOJIS = ['🎬','🎥','🦁','🔥','⚡','🎮','🎵','🌊','🏆'];
+
+let data = JSON.parse(localStorage.getItem('luhu_v2') || 'null');
+if (!data) {
+  data = {
+    profiles: [
+      { id: 'p1', name: 'Main', pin: '', color: '#ff6a00', videos: [] }
+    ]
+  };
+  save();
+}
+
+let currentProfileId = null;
+let pinEntered = '';
+let editVideoIdx = null;
+let editProfileIdx = null;
+let selectedColor = COLORS[0];
+
+function save() { localStorage.setItem('luhu_v2', JSON.stringify(data)); }
+
+function getProfile(id) { return data.profiles.find(p => p.id === id); }
+function currentProfile() { return getProfile(currentProfileId); }
+
+// ── SCREENS ──
+function showScreen(name) {
+  ['app-screen','settings-screen'].forEach(s => {
+    document.getElementById(s).classList.remove('active');
+  });
+  document.getElementById('profile-select-screen').classList.remove('active');
+  document.getElementById('pin-screen').classList.remove('active');
+
+  if (name === 'profile-select') { showProfileSelect(); return; }
+  if (name === 'pin') { document.getElementById('pin-screen').classList.add('active'); return; }
+  document.getElementById(name).classList.add('active');
+  if (name === 'settings-screen') renderSettingsProfiles();
+  if (name === 'app-screen') renderApp();
+}
+
+function showProfileSelect() {
+  document.getElementById('app-screen').classList.remove('active');
+  document.getElementById('settings-screen').classList.remove('active');
+  document.getElementById('pin-screen').classList.remove('active');
+  document.getElementById('profile-select-screen').classList.add('active');
+  renderProfileSelect();
+}
+
+// ── PROFILE SELECT ──
+function renderProfileSelect() {
+  const grid = document.getElementById('profiles-grid');
+  grid.innerHTML = data.profiles.map((p, i) => `
+    <div class="profile-tile" onclick="selectProfile('${p.id}')">
+      <div class="profile-avatar" style="background:${p.color}22; border-color:${p.color}44;">
+        <span style="color:${p.color}">${p.name[0].toUpperCase()}</span>
+      </div>
+      <div class="profile-name">${p.name}</div>
+    </div>
+  `).join('') + `
+    <div class="profile-tile add-profile-tile" onclick="openAddProfileModal(); showScreen('settings-screen');">
+      <div class="profile-avatar"><span>+</span></div>
+      <div class="profile-name" style="color:#555;">Add Profile</div>
+    </div>
+  `;
+}
+
+function selectProfile(id) {
+  const p = getProfile(id);
+  currentProfileId = id;
+  if (!p.pin) { enterApp(); return; }
+  // show pin screen
+  pinEntered = '';
+  document.getElementById('pin-avatar').style.cssText = `background:${p.color}22; color:${p.color}; width:70px; height:70px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:1.8rem;`;
+  document.getElementById('pin-avatar').textContent = p.name[0].toUpperCase();
+  document.getElementById('pin-name').textContent = p.name;
+  updatePinDots();
+  document.getElementById('pin-error').classList.remove('show');
+  showScreen('pin');
+}
+
+// ── PIN ──
+function pinKey(k) {
+  if (!k || pinEntered.length >= 4) return;
+  pinEntered += k;
+  updatePinDots();
+  if (pinEntered.length === 4) checkPin();
+}
+function pinDel() {
+  pinEntered = pinEntered.slice(0, -1);
+  document.getElementById('pin-error').classList.remove('show');
+  updatePinDots();
+}
+function updatePinDots() {
+  for (let i = 0; i < 4; i++) {
+    const d = document.getElementById('pd' + i);
+    if (d) d.classList.toggle('filled', i < pinEntered.length);
+  }
+}
+function checkPin() {
+  const p = currentProfile();
+  if (pinEntered === p.pin) { enterApp(); return; }
+  document.getElementById('pin-error').classList.add('show');
+  ['pd0','pd1','pd2','pd3'].forEach(id => {
+    const d = document.getElementById(id);
+    if (d) { d.style.background = '#ff4444'; d.style.borderColor = '#ff4444'; }
+  });
+  setTimeout(() => {
+    pinEntered = '';
+    updatePinDots();
+    ['pd0','pd1','pd2','pd3'].forEach(id => {
+      const d = document.getElementById(id);
+      if (d) { d.style.background = ''; d.style.borderColor = ''; }
+    });
+  }, 700);
+}
+
+function enterApp() {
+  const p = currentProfile();
+  const badge = document.getElementById('nav-profile-badge');
+  badge.textContent = p.name[0].toUpperCase();
+  badge.style.cssText = `width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;cursor:pointer;border:2px solid transparent;transition:border-color 0.2s;background:${p.color}33;color:${p.color};`;
+  document.getElementById('hero-title').textContent = `Hey ${p.name}! 🎬`;
+  showScreen('app-screen');
+}
+
+function goBackToApp() {
+  if (currentProfileId) showScreen('app-screen');
+  else showProfileSelect();
+}
+
+// ── VIDEOS ──
+function renderApp() {
+  renderFeatured();
+  renderCards();
+}
 
 const examples = [
   { title: 'Example: Game Highlights', sub: 'Sports · Demo', img: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=600&q=80', link: '#' },
@@ -132,98 +385,151 @@ const examples = [
 ];
 
 function renderFeatured() {
-  const grid = document.getElementById('featured-cards');
-  grid.innerHTML = examples.map(c => `
+  document.getElementById('featured-cards').innerHTML = examples.map(c => `
     <div class="card" onclick="goLink('${c.link}')">
       <img class="card-img" src="${c.img}" alt="${c.title}" onerror="this.style.display='none'" />
-      <div class="card-overlay">
-        <div class="card-title">${c.title}</div>
-        <div class="card-sub">${c.sub}</div>
-      </div>
+      <div class="card-overlay"><div class="card-title">${c.title}</div><div class="card-sub">${c.sub}</div></div>
       <div class="play-badge">DEMO</div>
     </div>
   `).join('');
 }
 
 function renderCards() {
+  const p = currentProfile();
   const grid = document.getElementById('user-cards');
-  if (!cards.length) {
-    grid.innerHTML = '<div class="empty-state"><span class="empty-icon">🎥</span>No videos yet — hit the button above to add your first one!</div>';
+  if (!p || !p.videos.length) {
+    grid.innerHTML = '<div class="empty-state">No videos yet — hit Add New Video to get started!</div>';
     return;
   }
-  grid.innerHTML = cards.map((c, i) => `
+  grid.innerHTML = p.videos.map((c, i) => `
     <div class="card" onclick="goLink('${c.link}')">
-      ${c.img
-        ? `<img class="card-img" src="${c.img}" alt="${c.title}" onerror="this.parentElement.querySelector('.card-img-placeholder').style.display='flex';this.style.display='none'" /><div class="card-img-placeholder" style="display:none;">🎬</div>`
-        : `<div class="card-img-placeholder">🎬</div>`
-      }
+      ${c.img ? `<img class="card-img" src="${c.img}" alt="${c.title}" onerror="this.style.display='none'" />` : `<div class="card-img-placeholder">🎬</div>`}
       <div class="card-overlay">
         <div class="card-title">${c.title}</div>
         ${c.sub ? `<div class="card-sub">${c.sub}</div>` : ''}
       </div>
-      <button class="delete-btn" onclick="deleteCard(event,${i})" title="Remove">✕</button>
+      <button class="delete-btn" onclick="deleteVideo(event,${i})">✕</button>
     </div>
   `).join('');
 }
 
-function saveCards() { localStorage.setItem('luhu_cards', JSON.stringify(cards)); }
-
-function openModal(idx = null) {
-  editIdx = idx;
-  document.getElementById('inp-title').value = idx !== null ? cards[idx].title : '';
-  document.getElementById('inp-sub').value = idx !== null ? cards[idx].sub : '';
-  document.getElementById('inp-img').value = idx !== null ? cards[idx].img : '';
-  document.getElementById('inp-link').value = idx !== null ? cards[idx].link : '';
+function openVideoModal(idx = null) {
+  editVideoIdx = idx;
+  const p = currentProfile();
+  document.getElementById('video-modal-title').textContent = idx !== null ? 'Edit Video' : 'Add a Video';
+  document.getElementById('inp-title').value = idx !== null ? p.videos[idx].title : '';
+  document.getElementById('inp-sub').value = idx !== null ? p.videos[idx].sub : '';
+  document.getElementById('inp-img').value = idx !== null ? p.videos[idx].img : '';
+  document.getElementById('inp-link').value = idx !== null ? p.videos[idx].link : '';
   const prev = document.getElementById('img-preview');
-  if (idx !== null && cards[idx].img) { prev.src = cards[idx].img; prev.style.display = 'block'; }
-  else { prev.style.display = 'none'; prev.src = ''; }
-  document.getElementById('modal').classList.add('open');
+  prev.style.display = 'none'; prev.src = '';
+  if (idx !== null && p.videos[idx].img) { prev.src = p.videos[idx].img; prev.style.display = 'block'; }
+  document.getElementById('video-modal').classList.add('open');
 }
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
-
+function closeVideoModal() { document.getElementById('video-modal').classList.remove('open'); }
 function previewImg(url) {
   const prev = document.getElementById('img-preview');
-  if (url.trim()) { prev.src = url; prev.style.display = 'block'; }
-  else { prev.style.display = 'none'; }
+  if (url.trim()) { prev.src = url; prev.style.display = 'block'; } else { prev.style.display = 'none'; }
 }
-
-function saveCard() {
+function saveVideo() {
   const title = document.getElementById('inp-title').value.trim();
-  const sub = document.getElementById('inp-sub').value.trim();
-  const img = document.getElementById('inp-img').value.trim();
   const link = document.getElementById('inp-link').value.trim();
-  if (!title) { document.getElementById('inp-title').focus(); return; }
-  if (!link) { document.getElementById('inp-link').focus(); return; }
-  const card = { title, sub, img, link };
-  if (editIdx !== null) cards[editIdx] = card;
-  else cards.unshift(card);
-  saveCards();
-  renderCards();
-  closeModal();
+  if (!title || !link) return;
+  const p = currentProfile();
+  const vid = { title, sub: document.getElementById('inp-sub').value.trim(), img: document.getElementById('inp-img').value.trim(), link };
+  if (editVideoIdx !== null) p.videos[editVideoIdx] = vid; else p.videos.unshift(vid);
+  save(); renderCards(); closeVideoModal();
 }
-
-function deleteCard(e, i) {
+function deleteVideo(e, i) {
   e.stopPropagation();
-  cards.splice(i, 1);
-  saveCards();
-  renderCards();
+  currentProfile().videos.splice(i, 1);
+  save(); renderCards();
+}
+function goLink(url) { if (url && url !== '#') window.open(url, '_blank'); }
+function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
+
+// ── SETTINGS / PROFILES ──
+function renderSettingsProfiles() {
+  document.getElementById('settings-profiles-list').innerHTML = data.profiles.map((p, i) => `
+    <div class="profile-row">
+      <div class="profile-row-avatar" style="background:${p.color}22; color:${p.color};">${p.name[0].toUpperCase()}</div>
+      <div class="profile-row-info">
+        <div class="profile-row-name">${p.name}</div>
+        <div class="profile-row-pin">${p.pin ? 'PIN set' : 'No PIN'}</div>
+      </div>
+      <div class="profile-row-btns">
+        <button class="row-btn" onclick="openEditProfileModal(${i})">Edit</button>
+        ${data.profiles.length > 1 ? `<button class="row-btn danger" onclick="deleteProfile(${i})">Delete</button>` : ''}
+      </div>
+    </div>
+  `).join('');
 }
 
-function goLink(url) {
-  if (url && url !== '#') window.open(url, '_blank');
+function buildColorSwatches(selected) {
+  document.getElementById('color-swatches').innerHTML = COLORS.map(c => `
+    <div class="swatch ${c === selected ? 'selected' : ''}" style="background:${c};" onclick="pickColor('${c}')"></div>
+  `).join('');
+  selectedColor = selected;
 }
 
-function scrollToSection(id) {
-  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+function pickColor(c) {
+  selectedColor = c;
+  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
+  event.target.classList.add('selected');
 }
 
-document.getElementById('modal').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
+function openAddProfileModal() {
+  editProfileIdx = null;
+  document.getElementById('profile-modal-title').textContent = 'Add Profile';
+  document.getElementById('inp-pname').value = '';
+  document.getElementById('inp-ppin').value = '';
+  buildColorSwatches(COLORS[0]);
+  document.getElementById('profile-modal').classList.add('open');
+}
+
+function openEditProfileModal(i) {
+  editProfileIdx = i;
+  const p = data.profiles[i];
+  document.getElementById('profile-modal-title').textContent = 'Edit Profile';
+  document.getElementById('inp-pname').value = p.name;
+  document.getElementById('inp-ppin').value = p.pin;
+  buildColorSwatches(p.color);
+  document.getElementById('profile-modal').classList.add('open');
+}
+
+function closeProfileModal() { document.getElementById('profile-modal').classList.remove('open'); }
+
+function saveProfile() {
+  const name = document.getElementById('inp-pname').value.trim();
+  const pin = document.getElementById('inp-ppin').value.trim();
+  if (!name) { document.getElementById('inp-pname').focus(); return; }
+  if (pin && (pin.length !== 4 || !/^\d{4}$/.test(pin))) {
+    alert('PIN must be exactly 4 digits!'); return;
+  }
+  if (editProfileIdx !== null) {
+    data.profiles[editProfileIdx].name = name;
+    data.profiles[editProfileIdx].pin = pin;
+    data.profiles[editProfileIdx].color = selectedColor;
+  } else {
+    data.profiles.push({ id: 'p' + Date.now(), name, pin, color: selectedColor, videos: [] });
+  }
+  save(); closeProfileModal(); renderSettingsProfiles();
+}
+
+function deleteProfile(i) {
+  if (!confirm('Delete this profile and all its videos?')) return;
+  if (data.profiles[i].id === currentProfileId) currentProfileId = null;
+  data.profiles.splice(i, 1);
+  save(); renderSettingsProfiles();
+}
+
+// close modals on bg click
+['video-modal','profile-modal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); });
 });
 
-renderFeatured();
-renderCards();
+// ── INIT ──
+showProfileSelect();
 </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"8bb9a4ff338042ea94848359dbe1f60d","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
