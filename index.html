@@ -385,6 +385,8 @@ body{color:var(--text);font-family:'DM Sans',sans-serif;overflow:hidden;position
         <div class="add-show-step active" id="show-step-1">
           <div style="font-size:20px;font-weight:500;color:var(--text-dim);">Show title</div>
           <input class="tv-input focusable" type="text" id="show-title" placeholder="e.g. My Vlog Series" maxlength="60" autocomplete="off" style="width:min(680px,90%);">
+          <div style="font-size:20px;font-weight:500;color:var(--text-dim);margin-top:4px;">Description <span style="color:var(--text-muted);font-size:14px;">(optional)</span></div>
+          <textarea class="tv-input-sm focusable" id="show-desc" placeholder="What's this show about?" maxlength="300" autocomplete="off" style="height:80px;resize:none;font-family:'DM Sans',sans-serif;line-height:1.5;"></textarea>
           <div style="display:flex;gap:10px;"><button class="btn-primary focusable" id="show-step1-next">Next →</button></div>
         </div>
         <div class="add-show-step" id="show-step-2">
@@ -416,6 +418,7 @@ body{color:var(--text);font-family:'DM Sans',sans-serif;overflow:hidden;position
     <button class="action-btn focusable" id="edit-show-btn" style="padding:7px 16px;font-size:13px;">✏️ Edit Show</button>
     <button class="action-btn focusable danger" id="delete-show-btn" style="padding:7px 16px;font-size:13px;">🗑️ Delete</button>
   </div>
+  <div id="show-detail-desc" style="color:var(--text-dim);font-size:13px;line-height:1.6;max-width:min(700px,90%);margin-bottom:4px;"></div>
   <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
     <div class="season-row" id="season-tabs"></div>
     <button class="btn-primary focusable" id="add-season-btn" style="padding:7px 16px;font-size:13px;">+ Season</button>
@@ -446,10 +449,38 @@ body{color:var(--text);font-family:'DM Sans',sans-serif;overflow:hidden;position
   </div>
 </div>
 
+<!-- EDIT EPISODE SCREEN -->
+<div class="screen" id="edit-episode-screen" style="padding:36px 4%;flex-direction:column;gap:18px;">
+  <h1 style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--orange);letter-spacing:3px;">Edit Episode</h1>
+  <div style="color:var(--text-dim);font-size:13px;" id="edit-ep-context"></div>
+  <div style="display:flex;flex-direction:column;gap:8px;">
+    <div style="font-size:13px;color:var(--text-dim);">Episode Title</div>
+    <input class="tv-input-sm focusable" type="text" id="edit-ep-title" autocomplete="off">
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px;">
+    <div style="font-size:13px;color:var(--text-dim);">Source</div>
+    <div style="font-size:12px;color:var(--text-muted);" id="edit-ep-current-source"></div>
+    <label class="upload-area focusable" id="edit-ep-upload-area" tabindex="0" style="max-width:min(600px,90%);">
+      <span style="font-size:24px;">📁</span>
+      <div><div style="font-weight:500;font-size:13px;">Replace with file upload</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">MP4 or MP3 — replaces current source</div></div>
+      <input type="file" id="edit-ep-file-input" accept="video/mp4,audio/mp3,audio/mpeg">
+    </label>
+    <div style="color:var(--text-muted);font-size:12px;">— or replace with a link —</div>
+    <input class="tv-input-sm focusable" type="text" id="edit-ep-url" placeholder="https://... (leave blank to keep current)" autocomplete="off">
+    <div style="color:var(--text-muted);font-size:12px;" id="edit-ep-upload-status"></div>
+  </div>
+  <div style="display:flex;gap:10px;margin-top:auto;">
+    <button class="btn-primary focusable" id="edit-ep-save-btn">Save Episode ✓</button>
+    <button class="btn-danger focusable" id="edit-ep-delete-btn">🗑️ Delete</button>
+    <button class="btn-secondary focusable" id="edit-ep-cancel-btn">Cancel</button>
+  </div>
+</div>
+
 <!-- EDIT SHOW -->
 <div class="screen" id="edit-show-screen" style="padding:36px 4%;flex-direction:column;gap:20px;">
   <h1 style="font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--orange);letter-spacing:3px;">Edit Show</h1>
   <div style="display:flex;flex-direction:column;gap:8px;"><div style="font-size:13px;color:var(--text-dim);">Show Title</div><input class="tv-input focusable" type="text" id="edit-show-title" maxlength="60" autocomplete="off" style="width:min(600px,90%);"></div>
+  <div style="display:flex;flex-direction:column;gap:8px;"><div style="font-size:13px;color:var(--text-dim);">Description <span style="color:var(--text-muted)">(optional)</span></div><textarea class="tv-input-sm focusable" id="edit-show-desc" placeholder="What's this show about?" maxlength="300" autocomplete="off" style="height:80px;resize:none;font-family:'DM Sans',sans-serif;line-height:1.5;"></textarea></div>
   <div style="display:flex;flex-direction:column;gap:8px;"><div style="font-size:13px;color:var(--text-dim);">Thumbnail URL <span style="color:var(--text-muted)">(optional)</span></div><input class="tv-input-sm focusable" type="text" id="edit-show-thumb" placeholder="https://..." autocomplete="off"></div>
   <div style="display:flex;flex-direction:column;gap:10px;" id="edit-show-vis-section">
     <div style="font-size:13px;color:var(--text-dim);">Who can see this show?</div>
@@ -1092,7 +1123,7 @@ function openShowDetail(showIdx){
   currentShowIdx=showIdx;currentSeasonIdx=0;
   const show=shows[showIdx];
   document.getElementById('show-detail-title').textContent=show.title;
-  // only show add buttons for admins or those with add permission
+  document.getElementById('show-detail-desc').textContent=show.desc||'';
   const canAdd=currentProfile&&(currentProfile.isAdmin||currentProfile.canAddVideos!==false);
   document.getElementById('add-season-btn').style.display=canAdd?'':'none';
   document.getElementById('add-episode-btn').style.display=canAdd?'':'none';
@@ -1115,10 +1146,15 @@ function renderEpisodeList(){
   const list=document.getElementById('episode-list');list.innerHTML='';
   const season=(show.seasons||[])[currentSeasonIdx];
   if(!season){list.innerHTML='<div style="color:var(--text-muted);font-size:13px;padding:16px 0;">No seasons yet — add one!</div>';return;}
+  const canEdit=currentProfile&&(currentProfile.isAdmin||currentProfile.canAddVideos!==false);
   (season.episodes||[]).forEach((ep,i)=>{
     const row=document.createElement('div');row.className='ep-row focusable';
-    row.innerHTML=`<div class="ep-num">E${i+1}</div><div class="ep-title">${ep.title}</div><div class="ep-meta">${ep.fileKey?'📁 Local':'🔗 Link'}</div>`;
-    row.addEventListener('click',()=>playMedia(ep,`${show.title} · S${currentSeasonIdx+1}E${i+1} · ${ep.title}`));
+    row.innerHTML=`<div class="ep-num">E${i+1}</div><div class="ep-title" style="flex:1;">${ep.title}</div><div class="ep-meta" style="margin-right:8px;">${ep.fileKey?'📁 Local':'🔗 Link'}</div>${canEdit?`<button class="action-btn focusable" data-epidx="${i}" style="font-size:11px;padding:5px 10px;">✏️</button>`:''}`
+    row.querySelector('.ep-title').addEventListener('click',()=>playMedia(ep,`${show.title} · S${currentSeasonIdx+1}E${i+1} · ${ep.title}`));
+    row.addEventListener('click',(e)=>{if(!e.target.closest('.action-btn'))playMedia(ep,`${show.title} · S${currentSeasonIdx+1}E${i+1} · ${ep.title}`);});
+    if(canEdit){
+      row.querySelector('.action-btn').addEventListener('click',(e)=>{e.stopPropagation();openEditEpisode(i);});
+    }
     list.appendChild(row);
   });
   if(!season.episodes||!season.episodes.length){list.innerHTML='<div style="color:var(--text-muted);font-size:13px;padding:16px 0;">No episodes yet — add one!</div>';}
@@ -1129,8 +1165,8 @@ document.getElementById('edit-show-btn').addEventListener('click',()=>{
   const canEdit=currentProfile&&(currentProfile.isAdmin||currentProfile.canAddVideos!==false);
   if(!canEdit){showToast('No permission to edit shows');return;}
   document.getElementById('edit-show-title').value=show.title;
+  document.getElementById('edit-show-desc').value=show.desc||'';
   document.getElementById('edit-show-thumb').value=show.thumb||'';
-  // only admins see visibility section
   document.getElementById('edit-show-vis-section').style.display=currentProfile.isAdmin?'':'none';
   renderEditShowProfilePicker(show);
   showScreen('edit-show-screen');focusFirst('edit-show-screen');
@@ -1161,6 +1197,7 @@ document.getElementById('edit-show-save-btn').addEventListener('click',()=>{
   if(!title){showToast('Title cannot be empty!');return;}
   const show=shows[currentShowIdx];
   show.title=title;
+  show.desc=document.getElementById('edit-show-desc').value.trim();
   show.thumb=document.getElementById('edit-show-thumb').value.trim();
   if(currentProfile.isAdmin){
     const adminIdxs=profiles.map((_,i)=>i).filter(i=>profiles[i].isAdmin);
@@ -1168,6 +1205,7 @@ document.getElementById('edit-show-save-btn').addEventListener('click',()=>{
   }
   save();showToast('Show updated!');
   document.getElementById('show-detail-title').textContent=title;
+  document.getElementById('show-detail-desc').textContent=show.desc||'';
   showScreen('show-detail');focusFirst('show-detail');
 });
 document.getElementById('edit-show-cancel-btn').addEventListener('click',()=>{showScreen('show-detail');focusFirst('show-detail');});
@@ -1215,6 +1253,71 @@ document.getElementById('ep-cancel-btn').addEventListener('click',()=>{
 });
 
 // ============================================================
+// EDIT EPISODE
+// ============================================================
+let editEpIdx=-1;
+let editEpPendingFileKey=null;
+function openEditEpisode(epIdx){
+  editEpIdx=epIdx;
+  editEpPendingFileKey=null;
+  const show=shows[currentShowIdx];
+  const ep=show.seasons[currentSeasonIdx].episodes[epIdx];
+  document.getElementById('edit-ep-context').textContent=`${show.title} → Season ${currentSeasonIdx+1} → Episode ${epIdx+1}`;
+  document.getElementById('edit-ep-title').value=ep.title;
+  document.getElementById('edit-ep-url').value='';
+  document.getElementById('edit-ep-upload-status').textContent='';
+  document.getElementById('edit-ep-current-source').textContent=ep.fileKey?'Current: 📁 Local file':`Current: 🔗 ${ep.url||'No source'}`;
+  showScreen('edit-episode-screen');focusFirst('edit-episode-screen');
+}
+document.getElementById('edit-ep-upload-area').addEventListener('click',()=>document.getElementById('edit-ep-file-input').click());
+document.getElementById('edit-ep-file-input').addEventListener('change',async(e)=>{
+  const file=e.target.files[0];if(!file)return;
+  const key='ep_'+Date.now();
+  document.getElementById('edit-ep-upload-status').textContent='Uploading...';
+  await saveFile(key,file);
+  if(editEpPendingFileKey)deleteFile(editEpPendingFileKey);
+  editEpPendingFileKey=key;
+  document.getElementById('edit-ep-upload-status').textContent=`✅ "${file.name}" ready — will replace current source`;
+  document.getElementById('edit-ep-url').value='';
+});
+document.getElementById('edit-ep-save-btn').addEventListener('click',()=>{
+  const title=document.getElementById('edit-ep-title').value.trim();
+  if(!title){showToast('Title cannot be empty!');return;}
+  const newUrl=document.getElementById('edit-ep-url').value.trim();
+  const ep=shows[currentShowIdx].seasons[currentSeasonIdx].episodes[editEpIdx];
+  const oldFileKey=ep.fileKey;
+  ep.title=title;
+  if(editEpPendingFileKey){
+    // new file uploaded — delete old file if it existed
+    if(oldFileKey)deleteFile(oldFileKey);
+    ep.fileKey=editEpPendingFileKey;
+    ep.url=null;
+    editEpPendingFileKey=null;
+  } else if(newUrl){
+    // new link pasted — delete old file if it existed
+    if(oldFileKey)deleteFile(oldFileKey);
+    ep.fileKey=null;
+    ep.url=newUrl;
+  }
+  // if neither — just title changed, source stays the same
+  save();showToast('Episode updated!');
+  showScreen('show-detail');renderEpisodeList();focusFirst('show-detail');
+});
+document.getElementById('edit-ep-delete-btn').addEventListener('click',()=>{
+  const ep=shows[currentShowIdx].seasons[currentSeasonIdx].episodes[editEpIdx];
+  showConfirm(`Delete "${ep.title}"?`,'This cannot be undone.',()=>{
+    if(ep.fileKey)deleteFile(ep.fileKey);
+    shows[currentShowIdx].seasons[currentSeasonIdx].episodes.splice(editEpIdx,1);
+    save();showToast('Episode deleted');
+    showScreen('show-detail');renderEpisodeList();focusFirst('show-detail');
+  });
+});
+document.getElementById('edit-ep-cancel-btn').addEventListener('click',()=>{
+  if(editEpPendingFileKey){deleteFile(editEpPendingFileKey);editEpPendingFileKey=null;}
+  showScreen('show-detail');focusFirst('show-detail');
+});
+
+// ============================================================
 // ADD TAB
 // ============================================================
 let showStep=1;
@@ -1242,7 +1345,7 @@ document.getElementById('type-video').addEventListener('click',()=>{
 document.getElementById('type-show').addEventListener('click',()=>{
   document.getElementById('add-type-pick').style.display='none';
   document.getElementById('add-show-flow').style.display='flex';
-  document.getElementById('show-title').value='';document.getElementById('show-thumb').value='';
+  document.getElementById('show-title').value='';document.getElementById('show-thumb').value='';document.getElementById('show-desc').value='';
   showVisibleProfiles=profiles.map((_,i)=>i);
   goShowStep(1);
   renderAddStepDots([1,2,3]);
@@ -1346,9 +1449,10 @@ document.getElementById('show-step3-back').addEventListener('click',()=>goShowSt
 document.getElementById('add-show-btn').addEventListener('click',()=>{
   const title=document.getElementById('show-title').value.trim();
   const thumb=document.getElementById('show-thumb').value.trim();
+  const desc=document.getElementById('show-desc').value.trim();
   const adminIdxs=profiles.map((_,i)=>i).filter(i=>profiles[i].isAdmin);
   const finalVisible=[...new Set([...showVisibleProfiles,...adminIdxs])];
-  shows.push({title,thumb,seasons:[],id:Date.now(),visibleTo:finalVisible});
+  shows.push({title,thumb,desc,seasons:[],id:Date.now(),visibleTo:finalVisible});
   save();showToast(`"${title}" created! 📺`);switchTab('shows');
 });
 
@@ -1426,6 +1530,7 @@ document.addEventListener('keydown',e=>{
     else if(currentScreen==='manage-videos-screen')openManageProfiles();
     else if(currentScreen==='show-detail'){showScreen('home');switchTab('shows');}
     else if(currentScreen==='add-episode-screen'){showScreen('show-detail');focusFirst('show-detail');}
+    else if(currentScreen==='edit-episode-screen'){if(editEpPendingFileKey){deleteFile(editEpPendingFileKey);editEpPendingFileKey=null;}showScreen('show-detail');focusFirst('show-detail');}
     else if(currentScreen==='edit-show-screen'){showScreen('show-detail');focusFirst('show-detail');}
     return;
   }
