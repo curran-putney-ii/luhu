@@ -1198,12 +1198,54 @@ function openShowDetail(showIdx){
 function renderSeasonTabs(){
   const show=shows[currentShowIdx];
   const tabs=document.getElementById('season-tabs');tabs.innerHTML='';
+  const canEdit=currentProfile&&(currentProfile.isAdmin||currentProfile.canAddVideos!==false);
   (show.seasons||[]).forEach((s,i)=>{
+    const wrap=document.createElement('div');
+    wrap.style.cssText='display:flex;align-items:center;gap:4px;';
     const btn=document.createElement('button');
     btn.className='season-btn focusable'+(i===currentSeasonIdx?' active-season':'');
-    btn.textContent=`Season ${i+1}`;
+    btn.textContent=s.name||`Season ${i+1}`;
     btn.addEventListener('click',()=>{currentSeasonIdx=i;renderSeasonTabs();renderEpisodeList();focusFirst('show-detail');});
-    tabs.appendChild(btn);
+    wrap.appendChild(btn);
+    if(canEdit){
+      // rename btn
+      const renameBtn=document.createElement('button');
+      renameBtn.className='action-btn focusable';
+      renameBtn.style.cssText='padding:5px 8px;font-size:11px;';
+      renameBtn.textContent='✏️';
+      renameBtn.title='Rename season';
+      renameBtn.addEventListener('click',(e)=>{
+        e.stopPropagation();
+        const newName=prompt(`Rename season ${i+1}:`,s.name||`Season ${i+1}`);
+        if(newName&&newName.trim()){
+          shows[currentShowIdx].seasons[i].name=newName.trim();
+          save();renderSeasonTabs();showToast('Season renamed!');
+        }
+      });
+      // delete btn
+      const delBtn=document.createElement('button');
+      delBtn.className='action-btn focusable danger';
+      delBtn.style.cssText='padding:5px 8px;font-size:11px;';
+      delBtn.textContent='🗑️';
+      delBtn.title='Delete season';
+      delBtn.addEventListener('click',(e)=>{
+        e.stopPropagation();
+        const sName=s.name||`Season ${i+1}`;
+        const epCount=(s.episodes||[]).length;
+        showConfirm(`Delete "${sName}"?`,`This removes the season and all ${epCount} episode(s). Cannot be undone.`,()=>{
+          // delete any local files in this season
+          (s.episodes||[]).forEach(ep=>{if(ep.fileKey)deleteFile(ep.fileKey);});
+          shows[currentShowIdx].seasons.splice(i,1);
+          if(currentSeasonIdx>=shows[currentShowIdx].seasons.length){
+            currentSeasonIdx=Math.max(0,shows[currentShowIdx].seasons.length-1);
+          }
+          save();renderSeasonTabs();renderEpisodeList();showToast(`${sName} deleted`);focusFirst('show-detail');
+        });
+      });
+      wrap.appendChild(renameBtn);
+      wrap.appendChild(delBtn);
+    }
+    tabs.appendChild(wrap);
   });
 }
 function renderEpisodeList(){
