@@ -806,9 +806,11 @@ function openEditProfile(i){
   editProfileIndex=i;
   const p=profiles[i];
   editPinEntry=p.pin||'';
+  editExitPinEntry=p.exitPin||'';
   document.getElementById('edit-name').value=p.name;
   renderEditIconGrid(p.icon);
   updatePinDots('edit-pin-dots',editPinEntry.length);
+  updatePinDots('edit-exit-pin-dots',editExitPinEntry.length);
   document.getElementById('edit-canAdd-yes').classList.toggle('selected',p.canAddVideos!==false);
   document.getElementById('edit-canAdd-no').classList.toggle('selected',p.canAddVideos===false);
   document.getElementById('edit-canAdd-section').style.display=p.isAdmin?'none':'';
@@ -823,6 +825,9 @@ function renderEditIconGrid(sel){
 }
 document.getElementById('edit-numpad').querySelectorAll('.numpad-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{const v=btn.dataset.val;if(v==='back'){editPinEntry=editPinEntry.slice(0,-1);}else if(v==='clear'){editPinEntry='';}else if(editPinEntry.length<4){editPinEntry+=v;}updatePinDots('edit-pin-dots',editPinEntry.length);});
+});
+document.getElementById('edit-exit-numpad').querySelectorAll('.numpad-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{const v=btn.dataset.val;if(v==='back'){editExitPinEntry=editExitPinEntry.slice(0,-1);}else if(v==='clear'){editExitPinEntry='';}else if(editExitPinEntry.length<4){editExitPinEntry+=v;}updatePinDots('edit-exit-pin-dots',editExitPinEntry.length);});
 });
 document.getElementById('edit-canAdd-yes').addEventListener('click',()=>{document.getElementById('edit-canAdd-yes').classList.add('selected');document.getElementById('edit-canAdd-no').classList.remove('selected');});
 document.getElementById('edit-canAdd-no').addEventListener('click',()=>{document.getElementById('edit-canAdd-no').classList.add('selected');document.getElementById('edit-canAdd-yes').classList.remove('selected');});
@@ -845,12 +850,20 @@ document.getElementById('edit-save-btn').addEventListener('click',()=>{
   if(!newName){showToast('Name cannot be empty!');return;}
   if(p.isAdmin&&editPinEntry.length!==4){showToast('Admin must have a 4-digit PIN!');return;}
   if(editPinEntry===RESET_PIN){showToast('That PIN is reserved — pick a different one!');return;}
+  if(editExitPinEntry===RESET_PIN){showToast('Exit PIN is reserved — pick a different one!');return;}
   const selIcon=document.getElementById('edit-icon-grid').querySelector('.selected')?.dataset.icon||p.icon;
   const newCanAdd=document.getElementById('edit-canAdd-yes').classList.contains('selected');
   const pinChanged=editPinEntry!==(p.pin||'');
+  const exitPinChanged=editExitPinEntry!==(p.exitPin||'');
   const canAddChanged=!p.isAdmin&&(newCanAdd!==(p.canAddVideos!==false));
-  function doSave(){p.name=newName;p.icon=selIcon;p.pin=editPinEntry.length===4?editPinEntry:'';if(!p.isAdmin)p.canAddVideos=newCanAdd;save();showToast('Profile updated!');openManageProfiles();}
-  if((pinChanged||canAddChanged)&&hasAdmins()){
+  function doSave(){
+    p.name=newName;p.icon=selIcon;
+    p.pin=editPinEntry.length===4?editPinEntry:'';
+    p.exitPin=editExitPinEntry.length===4?editExitPinEntry:'';
+    if(!p.isAdmin)p.canAddVideos=newCanAdd;
+    save();showToast('Profile updated!');openManageProfiles();
+  }
+  if((pinChanged||exitPinChanged||canAddChanged)&&hasAdmins()){
     const admins=getAdmins();
     openPinScreen({icon:admins[0].icon,name:admins[0].name,subtitle:'Admin PIN to save sensitive changes',context:'🔒 PIN or permissions changed',
       onSuccess:(entered)=>{if(entered===admins[0].pin){doSave();}else{document.getElementById('pin-error').textContent='Wrong PIN';pinEntry='';updatePinDots('pin-dots',0);}},
@@ -956,13 +969,21 @@ document.getElementById('step3-next').addEventListener('click',()=>{
   setupPinEntry='';updatePinDots('setup-pin-dots',0);goSetupStep(4);
 });
 document.getElementById('step4-back').addEventListener('click',()=>goSetupStep(3));
+// step4-next-btn moves to exit PIN step
+document.getElementById('step4-next-btn').addEventListener('click',()=>{
+  const isAdmin=document.getElementById('admin-yes').classList.contains('selected');
+  if(isAdmin&&setupPinEntry.length!==4){showToast('Admin PIN is required!');return;}
+  if(setupPinEntry===RESET_PIN){showToast('That PIN is reserved — pick a different one!');return;}
+  setupExitPinEntry='';updatePinDots('setup-exit-pin-dots',0);goSetupStep(5);
+});
+document.getElementById('step5-back').addEventListener('click',()=>goSetupStep(4));
 document.getElementById('step4-done').addEventListener('click',()=>{
   const name=document.getElementById('setup-name').value.trim();
   const isAdmin=document.getElementById('admin-yes').classList.contains('selected');
   const selIcon=document.getElementById('icon-grid').querySelector('.selected')?.dataset.icon||ICONS[0];
   if(isAdmin&&setupPinEntry.length!==4){showToast('Admin PIN is required!');return;}
-  if(setupPinEntry===RESET_PIN){showToast('That PIN is reserved — pick a different one!');return;}
-  profiles.push({name,icon:selIcon,isAdmin,pin:setupPinEntry.length===4?setupPinEntry:'',canAddVideos:true,id:Date.now()});
+  if(setupExitPinEntry===RESET_PIN){showToast('Exit PIN is reserved — pick a different one!');return;}
+  profiles.push({name,icon:selIcon,isAdmin,pin:setupPinEntry.length===4?setupPinEntry:'',exitPin:setupExitPinEntry.length===4?setupExitPinEntry:'',canAddVideos:true,id:Date.now()});
   save();showToast(`"${name}" created!`);renderProfiles();showScreen('profile-select');focusFirst('profile-select');
 });
 
@@ -983,7 +1004,39 @@ function switchTab(tab){
   focusFirst('home');
 }
 document.querySelectorAll('.nav-tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
-document.getElementById('profile-switch-btn').addEventListener('click',()=>{renderProfiles();showScreen('profile-select');focusFirst('profile-select');});
+
+function exitProfileFlow(){
+  if(!currentProfile||!currentProfile.exitPin){
+    // no exit PIN — just go back to profile select
+    renderProfiles();showScreen('profile-select');focusFirst('profile-select');
+    return;
+  }
+  const admins=getAdmins().filter(a=>profiles.indexOf(a)!==profiles.indexOf(currentProfile));
+  openPinScreen({
+    icon:currentProfile.icon,
+    name:currentProfile.name,
+    subtitle:'Enter exit PIN to leave',
+    context:admins.length?'👑 Admins can override':'🚪 Exit PIN required',
+    onSuccess:(entered)=>{
+      if(entered===currentProfile.exitPin){
+        renderProfiles();showScreen('profile-select');focusFirst('profile-select');
+        return;
+      }
+      // check admin override
+      const match=admins.find(a=>a.pin===entered);
+      if(match){
+        showToast(`Admin override by ${match.name} 👑`);
+        renderProfiles();showScreen('profile-select');focusFirst('profile-select');
+        return;
+      }
+      document.getElementById('pin-error').textContent='Wrong PIN, you\'re stuck 😈';
+      pinEntry='';updatePinDots('pin-dots',0);
+    },
+    onCancel:()=>{showScreen('home');focusFirst('home');}
+  });
+}
+
+document.getElementById('profile-switch-btn').addEventListener('click',()=>exitProfileFlow());
 
 function renderHomeVideos(){
   const c=document.getElementById('categories-container');c.innerHTML='';
@@ -1366,7 +1419,7 @@ document.addEventListener('keydown',e=>{
     e.preventDefault();
     if(currentScreen==='pin-screen'){if(window._pinCancel)window._pinCancel();}
     else if(currentScreen==='home'&&activeTab!=='videos')switchTab('videos');
-    else if(currentScreen==='home'){renderProfiles();showScreen('profile-select');focusFirst('profile-select');}
+    else if(currentScreen==='home')exitProfileFlow();
     else if(currentScreen==='profile-setup'){renderProfiles();showScreen('profile-select');focusFirst('profile-select');}
     else if(currentScreen==='manage-profiles'){renderProfiles();showScreen('profile-select');focusFirst('profile-select');}
     else if(currentScreen==='edit-profile')openManageProfiles();
